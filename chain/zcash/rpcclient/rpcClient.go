@@ -3,6 +3,8 @@ package rpcclient
 import (
 	"encoding/base64"
 
+	"github.com/prometheus/common/log"
+
 	"github.com/ybbus/jsonrpc"
 )
 
@@ -13,7 +15,7 @@ type ConnConfig struct {
 
 	// Endpoint is the websocket endpoint on the RPC server.  This is
 	// typically "ws".
-	Endpoint string
+	//Endpoint string
 
 	// User is the username to use to authenticate to the RPC server.
 	User string
@@ -27,14 +29,14 @@ type ConnConfig struct {
 	// features of the client such notifications only work with websockets,
 	// however, not all servers support the websocket extensions, so this
 	// flag can be set to true to use basic HTTP POST requests instead.
-	HTTPPostMode bool
+	//HTTPPostMode bool
 }
 
 type Client struct {
 	// config holds the connection configuration assoiated with this client.
 	config *ConnConfig
 
-	rpcClient *jsonrpc.RPCClient
+	rpcClient jsonrpc.RPCClient
 }
 
 func New(config *ConnConfig) (*Client, error) {
@@ -45,5 +47,29 @@ func New(config *ConnConfig) (*Client, error) {
 				"Authorization": "Basic " + basicAuth,
 			}})
 
-	return &Client{config: config, rpcClient: &rpcClient}, nil
+	return &Client{config: config, rpcClient: rpcClient}, nil
+}
+
+func (c *Client) GetInfo() *GetInfo {
+	var info *GetInfo
+	if err := c.rpcClient.CallFor(&info, "getinfo"); err != nil {
+		log.Warnln("Error calling getinfo", err)
+		return nil
+	}
+	return info
+}
+
+func (c *Client) GetBlockchainInfo() *GetBlockchainInfo {
+	var blockInfo *GetBlockchainInfo
+	if err := c.rpcClient.CallFor(blockInfo, "getblockchaininfo"); err != nil {
+		log.Warnln("Error calling getinfo", err)
+		return nil
+	}
+	return blockInfo
+}
+
+func (c *Client) GetBlockCount() (int64, error) {
+	var height int64
+	err := c.rpcClient.CallFor(&height, "getblockcount")
+	return height, err
 }
