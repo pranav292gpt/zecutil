@@ -61,8 +61,8 @@ func (c *Client) GetInfo() *GetInfo {
 
 func (c *Client) GetBlockchainInfo() *GetBlockchainInfo {
 	var blockInfo *GetBlockchainInfo
-	if err := c.rpcClient.CallFor(blockInfo, "getblockchaininfo"); err != nil {
-		log.Warnln("Error calling getinfo", err)
+	if err := c.rpcClient.CallFor(&blockInfo, "getblockchaininfo"); err != nil {
+		log.Warnln("Error calling getblockchaininfo", err)
 		return nil
 	}
 	return blockInfo
@@ -72,4 +72,44 @@ func (c *Client) GetBlockCount() (int64, error) {
 	var height int64
 	err := c.rpcClient.CallFor(&height, "getblockcount")
 	return height, err
+}
+
+func (c *Client) GetBlockHash(height int) (string, error) {
+	var hash string
+	err := c.rpcClient.CallFor(&hash, "getblockhash", height)
+	return hash, err
+}
+
+func (c *Client) GetNetworkInfo() *GetNetworkInfo {
+	var networkInfo *GetNetworkInfo
+	if err := c.rpcClient.CallFor(&networkInfo, "getnetworkinfo"); err != nil {
+		log.Warnln("Error calling getnetworkinfo", err)
+		return nil
+	}
+	return networkInfo
+}
+
+// todo , asl Pranav if it's Ok to return upspent as an array
+func (c *Client) ListUnspent() []Unspent {
+	unspent := []Unspent{}
+	if err := c.rpcClient.CallFor(&unspent, "listunspent"); err != nil {
+		log.Warnln("Error calling listunspent ", err)
+		return nil
+	}
+	return unspent
+}
+
+func (c *Client) ListUnspentMinMaxAddresses(minconf int, maxconf int, addresses []string) []Unspent {
+	unspent := []Unspent{}
+	if err := c.rpcClient.CallFor(&unspent, "listunspent", minconf, maxconf, addresses); err != nil {
+		log.Warnln("Error calling listunspent ", err)
+		return nil
+	}
+	return unspent
+}
+
+func (c *Client) GetRawTransaction(txid string) (string, error) {
+	var rawtx string
+	err := c.rpcClient.CallFor(&rawtx, "getrawtransaction", rawtx)
+	return rawtx, err
 }

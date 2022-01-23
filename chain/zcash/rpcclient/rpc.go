@@ -31,6 +31,50 @@ type GetMemPoolInfo struct {
 	Usage float64 `json:"usage"`
 }
 
+// GetNetworkInfoResult return the zcashd rpc `getnetworkinfo`
+// https://zcash.github.io/rpc/getnetworkinfo.html
+type GetNetworkInfo struct {
+	Version         uint32         `json:"version"`
+	Subversion      string         `json:"subversion"`
+	Protocolversion uint32         `json:"protocolversion"`
+	Localservices   string         `json:"localservices"`
+	Timeoffset      int64          `json:"timeoffset"`
+	Connections     uint32         `json:"connections"`
+	Networks        []Network      `json:"networks"`
+	Relayfee        float64        `json:"relayfee"`
+	Localaddresses  []LocalAddress `json:"localaddresses"`
+	Warnings        string         `json:"warnings"`
+}
+
+// Network network info
+type Network struct {
+	Name                      string `json:"name"`
+	Limited                   bool   `json:"limited"`
+	Reachable                 bool   `json:"reachable"`
+	Proxy                     string `json:"proxy"`
+	ProxyRandomizeCredentials bool   `json:"proxy_randomize_credentials"`
+}
+
+// LocalAddress local address
+type LocalAddress struct {
+	Address string `json:"address"`
+	Port    int    `json:"port"`
+	Score   int    `json:"score"`
+}
+
+type Unspent struct {
+	TxID          string  `json:"txid"`
+	VOut          int     `json:"vout"`
+	Generated     bool    `json:"generated"`
+	Address       string  `json:"address"`
+	ScriptPubKey  string  `json:"scriptPubKey"`
+	Amount        float64 `json:"amount"`
+	AmountZat     float64 `json:"amountZat"`
+	Confirmations int     `json:"confirmations"`
+	RedeemScript  string  `json:"redeemScript"`
+	Spendable     bool    `json:"spendable"`
+}
+
 // ZGetTotalBalance return the node's wallet balances
 // https://zcash-rpc.github.io/z_gettotalbalance.html
 type ZGetTotalBalance struct {
