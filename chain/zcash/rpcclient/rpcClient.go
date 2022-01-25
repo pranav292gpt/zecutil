@@ -2,6 +2,7 @@ package rpcclient
 
 import (
 	"encoding/base64"
+	"fmt"
 
 	"github.com/prometheus/common/log"
 
@@ -109,7 +110,14 @@ func (c *Client) ListUnspentMinMaxAddresses(minconf int, maxconf int, addresses 
 }
 
 func (c *Client) GetRawTransaction(txid string) (string, error) {
+	fmt.Println(txid)
 	var rawtx string
-	err := c.rpcClient.CallFor(&rawtx, "getrawtransaction", rawtx)
+	err := c.rpcClient.CallFor(&rawtx, "getrawtransaction", txid)
+	return rawtx, err
+}
+
+func (c *Client) GetRawTransactionVerbose(txid string) (*Transaction, error) {
+	var rawtx *Transaction
+	err := c.rpcClient.CallFor(&rawtx, "getrawtransaction", txid, 1)
 	return rawtx, err
 }
