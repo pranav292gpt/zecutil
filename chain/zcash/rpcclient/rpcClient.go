@@ -2,7 +2,8 @@ package rpcclient
 
 import (
 	"encoding/base64"
-	"fmt"
+
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
 
 	"github.com/prometheus/common/log"
 
@@ -75,19 +76,18 @@ func (c *Client) GetBlockCount() (int64, error) {
 	return height, err
 }
 
-func (c *Client) GetBlockHash(height int) (string, error) {
+func (c *Client) GetBlockHash(height int64) (string, error) {
 	var hash string
 	err := c.rpcClient.CallFor(&hash, "getblockhash", height)
 	return hash, err
 }
 
-func (c *Client) GetNetworkInfo() *GetNetworkInfo {
+func (c *Client) GetNetworkInfo() (*GetNetworkInfo, error) {
 	var networkInfo *GetNetworkInfo
 	if err := c.rpcClient.CallFor(&networkInfo, "getnetworkinfo"); err != nil {
-		log.Warnln("Error calling getnetworkinfo", err)
-		return nil
+		return nil, err
 	}
-	return networkInfo
+	return networkInfo, nil
 }
 
 // todo , asl Pranav if it's Ok to return upspent as an array
@@ -100,17 +100,15 @@ func (c *Client) ListUnspent() []Unspent {
 	return unspent
 }
 
-func (c *Client) ListUnspentMinMaxAddresses(minconf int, maxconf int, addresses []string) []Unspent {
+func (c *Client) ListUnspentMinMaxAddresses(minconf int, maxconf int, addresses []string) ([]Unspent, error) {
 	unspent := []Unspent{}
 	if err := c.rpcClient.CallFor(&unspent, "listunspent", minconf, maxconf, addresses); err != nil {
-		log.Warnln("Error calling listunspent ", err)
-		return nil
+		return nil, err
 	}
-	return unspent
+	return unspent, nil
 }
 
 func (c *Client) GetRawTransaction(txid string) (string, error) {
-	fmt.Println(txid)
 	var rawtx string
 	err := c.rpcClient.CallFor(&rawtx, "getrawtransaction", txid)
 	return rawtx, err
@@ -120,4 +118,30 @@ func (c *Client) GetRawTransactionVerbose(txid string) (*Transaction, error) {
 	var rawtx *Transaction
 	err := c.rpcClient.CallFor(&rawtx, "getrawtransaction", txid, 1)
 	return rawtx, err
+}
+
+func (c *Client) GetRawMempool() ([]*chainhash.Hash, error) {
+	var txHashStrs []string
+	err := c.rpcClient.CallFor(&txHashStrs, "getrawmempool", "true")
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a slice of ShaHash arrays from the string slice.
+	txHashes := make([]*chainhash.Hash, 0, len(txHashStrs))
+	for _, hashStr := range txHashStrs {
+		txHash, err := chainhash.NewHashFromStr(hashStr)
+		if err != nil {
+			return nil, err
+		}
+		txHashes = append(txHashes, txHash)
+	}
+
+	return txHashes, nil
+}
+
+func (c *Client) GetBlockVerboseTx(hash string) (*GetBlockVerboseResult, error) {
+	var result *GetBlockVerboseResult
+	err := c.rpcClient.CallFor(&result, "getblock", hash, 2)
+	return result, err
 }

@@ -3,6 +3,7 @@ package zcash
 import (
 	"bytes"
 	"crypto/sha256"
+	"errors"
 	"fmt"
 
 	"github.com/btcsuite/btcd/chaincfg"
@@ -290,4 +291,27 @@ func checksum(input []byte) (cksum [4]byte) {
 	)
 	copy(cksum[:], h2[:4])
 	return
+}
+
+// ExtractPkScriptAddrs returns the type of script, addresses and required
+// signatures associated with the passed PkScript.  Note that it only works for
+// 'standard' transaction script types.  Any data such as public keys which are
+// invalid are omitted from the results.
+func ExtractPkScriptAddrs(pkScript []byte, chainParams *Params) (btcutil.Address, error) {
+	// No valid addresses or required signatures if the script doesn't
+	// parse.
+	if len(pkScript) == 1+1+20+1 && pkScript[0] == 0xa9 && pkScript[1] == 0x14 && pkScript[22] == 0x87 {
+		return NewAddressScriptHashFromHash(pkScript[2:22], chainParams)
+	} else if len(pkScript) == 1+1+1+20+1+1 && pkScript[0] == 0x76 && pkScript[1] == 0xa9 && pkScript[2] == 0x14 && pkScript[23] == 0x88 && pkScript[24] == 0xac {
+		return NewAddressPubKeyHash(pkScript[3:23], chainParams)
+	}
+	return nil, errors.New("unknown script type")
+}
+
+func DecodeAddress(addr string, defaultNet *Params) (btcutil.Address, error) {
+	rawAddr, err := NewAddressDecoder(defaultNet).DecodeAddress(address.Address(addr))
+	if err != nil {
+		return nil, err
+	}
+	return NewAddressPubKeyHash(rawAddr, defaultNet)
 }

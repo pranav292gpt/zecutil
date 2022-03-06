@@ -41,7 +41,7 @@ type GetNetworkInfo struct {
 	Timeoffset      int64          `json:"timeoffset"`
 	Connections     uint32         `json:"connections"`
 	Networks        []Network      `json:"networks"`
-	Relayfee        float64        `json:"relayfee"`
+	RelayFee        float64        `json:"relayfee"`
 	Localaddresses  []LocalAddress `json:"localaddresses"`
 	Warnings        string         `json:"warnings"`
 }
@@ -64,7 +64,7 @@ type LocalAddress struct {
 
 type Unspent struct {
 	TxID          string  `json:"txid"`
-	VOut          int     `json:"vout"`
+	VOut          uint32  `json:"vout"`
 	Generated     bool    `json:"generated"`
 	Address       string  `json:"address"`
 	ScriptPubKey  string  `json:"scriptPubKey"`
@@ -169,10 +169,10 @@ type Transaction struct {
 	Hex             string                   `json:"hex"`
 	Txid            string                   `json:"txid"`
 	Version         int                      `json:"version"`
-	Locktime        int                      `json:"locktime"`
+	LockTime        int                      `json:"locktime"`
 	ExpiryHeight    int                      `json:"expirtheight"`
-	VIn             []VInTX                  `json:"vin"`
-	VOut            []VOutTX                 `json:"vout"`
+	VIn             []VIn                    `json:"vin"`
+	VOut            []VOut                   `json:"vout"`
 	VJoinSplit      []VJoinSplitTX           `json:"vjoinsplit"`
 	ValueBalance    float64                  `json:"valueBalance"`
 	VShieldedSpend  []map[string]interface{} `json:"vShieldedSpend"`
@@ -225,17 +225,24 @@ func (t Transaction) IsMixed() bool {
 		(t.ContainsSprout() || t.ContainsSapling())
 }
 
-type VInTX struct {
+type VIn struct {
+	Coinbase  string `json:"coinbase"`
 	TxID      string `json:"txid"`
 	VOut      int    `json:"vout"`
 	ScriptSig ScriptSig
 	Sequence  int `json:"sequemce"`
 }
+
+// IsCoinBase returns a bool to show if a Vin is a Coinbase one or not.
+func (v *VIn) IsCoinBase() bool {
+	return len(v.Coinbase) > 0
+}
+
 type ScriptSig struct {
 	Asm string `json:"asm"`
 	Hex string `json:"hex"`
 }
-type VOutTX struct {
+type VOut struct {
 	Value        float64
 	N            int
 	ScriptPubKey ScriptPubKey
@@ -266,4 +273,32 @@ type TXOutSetInfo struct {
 	Transactions int     `json:"transactions"`
 	TXOuts       int     `json:"txouts"`
 	TotalAmount  float64 `json:"total_amount"`
+}
+
+// ScriptPubKeyResult models the scriptPubKey data of a tx script.  It is
+// defined separately since it is used by multiple commands.
+type ScriptPubKeyResult struct {
+	Asm       string   `json:"asm"`
+	Hex       string   `json:"hex,omitempty"`
+	ReqSigs   int32    `json:"reqSigs,omitempty"`
+	Type      string   `json:"type"`
+	Addresses []string `json:"addresses,omitempty"`
+}
+
+type GetBlockVerboseResult struct {
+	Hash             string        `json:"hash"`
+	Confirmations    int           `json:"confirmations"`
+	Size             int           `json:"size"`
+	Height           int64         `json:"height"`
+	Version          int           `json:"version"`
+	MerkleRoot       string        `json:"merkleroot"`
+	FinalSaplingRoot string        `json:"finalsaplingroot"`
+	FinalOrchardRoot string        `json:"finalorchardroot"`
+	Tx               []Transaction `json:"tx"`
+	Time             int64         `json:"time"`
+	Nonce            uint32        `json:"nonce"`
+	Bits             string        `json:"bits"`
+	Difficulty       float64       `json:"difficulty"`
+	PreviousHash     string        `json:"previousblockhash"`
+	NextHash         string        `json:"nextblockhash,omitempty"`
 }
