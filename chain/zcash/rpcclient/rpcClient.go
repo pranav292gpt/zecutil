@@ -145,3 +145,9 @@ func (c *Client) GetBlockVerboseTx(hash string) (*GetBlockVerboseResult, error) 
 	err := c.rpcClient.CallFor(&result, "getblock", hash, 2)
 	return result, err
 }
+
+func (c *Client) SendRawTransactionCmd(hexstring string, allowhighfees bool) (string, error) {
+	var result string
+	err := c.rpcClient.CallFor(&result, "getblock", hexstring, allowhighfees)
+	return result, err
+}
