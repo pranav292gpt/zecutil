@@ -155,7 +155,7 @@ func (c *Client) SendRawTransactionCmd(hexstring string, allowhighfees bool) (st
 
 func (c *Client) GetMempoolEntry(txID string) (*string, error) {
 	var result []string
-	err := c.rpcClient.CallFor(&result, "getrawmempool")
+	err := c.rpcClient.CallFor(&result, "getrawmempool", txID)
 	if err != nil {
 		return nil, err
 	}
@@ -165,4 +165,10 @@ func (c *Client) GetMempoolEntry(txID string) (*string, error) {
 		}
 	}
 	return nil, fmt.Errorf("unable to finc txhash in mempool")
+}
+
+func (c *Client) GetBestBlockHash() (string, error) {
+	var result string
+	err := c.rpcClient.CallFor(&result, "getbestblockhash")
+	return result, err
 }
