@@ -2,6 +2,7 @@ package rpcclient
 
 import (
 	"encoding/base64"
+	"fmt"
 
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 
@@ -150,4 +151,18 @@ func (c *Client) SendRawTransactionCmd(hexstring string, allowhighfees bool) (st
 	var result string
 	err := c.rpcClient.CallFor(&result, "getblock", hexstring, allowhighfees)
 	return result, err
+}
+
+func (c *Client) GetMempoolEntry(txID string) (*string, error) {
+	var result []string
+	err := c.rpcClient.CallFor(&result, "getrawmempool")
+	if err != nil {
+		return nil, err
+	}
+	for _, tx := range result {
+		if tx == txID {
+			return &txID, nil
+		}
+	}
+	return nil, fmt.Errorf("unable to finc txhash in mempool")
 }

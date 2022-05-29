@@ -302,3 +302,23 @@ type GetBlockVerboseResult struct {
 	PreviousHash     string        `json:"previousblockhash"`
 	NextHash         string        `json:"nextblockhash,omitempty"`
 }
+
+//type Unspent struct {
+//	TxID          string  `json:"txid"`
+//	VOut          int     `json:"vout"`
+//	Generated     bool    `json:"generated"`
+//	Address       string  `json:"address"`
+//	ScriptPubKey  string  `json:"scriptPubKey"`
+//	Amount        float64 `json:"amount"`
+//	AmountZat     uint64  `json:"amountZat"`
+//	Confirmations int     `json:"confirmations"`
+//	RedeemScript  string  `json:"redeemScript"`
+//	Spendable     bool    `json:"spendable"`
+//}
+//
+//type ListUnspent struct {
+//
+//}
+
+type RawMemPool struct {
+}
