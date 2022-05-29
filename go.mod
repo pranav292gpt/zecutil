@@ -3,8 +3,8 @@ module github.com/pranav292gpt/zecutil
 go 1.17
 
 require (
-	github.com/btcsuite/btcd v0.21.0-beta
-	github.com/btcsuite/btcutil v1.0.2
+	github.com/btcsuite/btcd v0.22.0-beta
+	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/dchest/blake2b v1.0.0
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0
@@ -18,7 +18,7 @@ require (
 require (
 	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc // indirect
 	github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf // indirect
-	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
+        github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
 	github.com/ethereum/go-ethereum v1.10.4 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.1 // indirect
