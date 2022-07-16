@@ -3,9 +3,9 @@ package rpcclient
 import (
 	"encoding/base64"
 	"fmt"
+	"log"
 
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/prometheus/common/log"
 
 	"github.com/ybbus/jsonrpc"
 )
@@ -55,7 +55,7 @@ func New(config *ConnConfig) (*Client, error) {
 func (c *Client) GetInfo() *GetInfo {
 	var info *GetInfo
 	if err := c.rpcClient.CallFor(&info, "getinfo"); err != nil {
-		log.Warnln("Error calling getinfo", err)
+		log.Print("Error calling getinfo", err)
 		return nil
 	}
 	return info
@@ -64,7 +64,7 @@ func (c *Client) GetInfo() *GetInfo {
 func (c *Client) GetBlockchainInfo() *GetBlockchainInfo {
 	var blockInfo *GetBlockchainInfo
 	if err := c.rpcClient.CallFor(&blockInfo, "getblockchaininfo"); err != nil {
-		log.Warnln("Error calling getblockchaininfo", err)
+		log.Print("Error calling getblockchaininfo", err)
 		return nil
 	}
 	return blockInfo
@@ -94,7 +94,7 @@ func (c *Client) GetNetworkInfo() (*GetNetworkInfo, error) {
 func (c *Client) ListUnspent() []Unspent {
 	unspent := []Unspent{}
 	if err := c.rpcClient.CallFor(&unspent, "listunspent"); err != nil {
-		log.Warnln("Error calling listunspent ", err)
+		log.Println("Error calling listunspent ", err)
 		return nil
 	}
 	return unspent
