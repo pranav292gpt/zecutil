@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
-
 	"github.com/prometheus/common/log"
 
 	"github.com/ybbus/jsonrpc"
